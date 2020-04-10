@@ -1,0 +1,15 @@
+name: AdvancedMessenger
+version: ${project.version}
+api-version: 1.15
+main: com.darkender.plugins.advancedmessenger.AdvancedMessenger
+author: Techdoodle
+commands:
+  message:
+    aliases:
+      - msg
+      - m
+    description: Message a player
+  reply:
+    aliases:
+      - r
+    description: Reply to a player
