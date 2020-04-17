@@ -106,7 +106,9 @@ public class AdvancedMessenger extends JavaPlugin implements Listener
                                 {
                                     User essReceiver = essentials.getUser(receiver);
                                     User essSender = essentials.getUser(sender);
-                                    if(essSender.isMuted() || essReceiver.isIgnoredPlayer(essSender))
+                                    if(essSender.isMuted() ||
+                                            (essReceiver.isIgnoredPlayer(essSender) && !essSender.isIgnoreExempt()) ||
+                                            (essReceiver.isIgnoreMsg() && !essSender.isIgnoreExempt()))
                                     {
                                         continue;
                                     }
@@ -213,10 +215,20 @@ public class AdvancedMessenger extends JavaPlugin implements Listener
         }
         else
         {
-            if(essentials != null && essentials.getUser(toPlayer).isIgnoredPlayer(essentials.getUser(from)))
+            if(essentials != null)
             {
-                from.sendMessage(ChatColor.RED + "You are currently ignored!");
-                return;
+                User essToPlayer = essentials.getUser(toPlayer);
+                User essFromPlayer = essentials.getUser(from);
+                if(essToPlayer.isIgnoredPlayer(essFromPlayer) && !essFromPlayer.isIgnoreExempt())
+                {
+                    from.sendMessage(ChatColor.RED + "You are currently ignored!");
+                    return;
+                }
+                else if(essToPlayer.isIgnoreMsg() && !essFromPlayer.isIgnoreExempt())
+                {
+                    from.sendMessage(ChatColor.RED + toPlayer.getName() + " is ignoring messages");
+                    return;
+                }
             }
             
             toPlayer.spigot().sendMessage(new ComponentBuilder()
