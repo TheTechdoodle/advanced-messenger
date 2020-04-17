@@ -2,6 +2,8 @@ package com.darkender.plugins.advancedmessenger;
 
 import com.darkender.plugins.advancedmessenger.commands.MessageCommand;
 import com.darkender.plugins.advancedmessenger.commands.ReplyCommand;
+import com.earth2me.essentials.Essentials;
+import com.earth2me.essentials.User;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -40,10 +42,16 @@ public class AdvancedMessenger extends JavaPlugin implements Listener
             "..      ",
             "...      ",
     };
+    private Essentials essentials = null;
     
     @Override
     public void onEnable()
     {
+        if(getServer().getPluginManager().getPlugin("Essentials") != null)
+        {
+            essentials = (Essentials) getServer().getPluginManager().getPlugin("Essentials");
+        }
+        
         // Add players who are on the server when the plugin is enabled
         messengerData = new HashMap<>();
         for(Player p : getServer().getOnlinePlayers())
@@ -94,6 +102,16 @@ public class AdvancedMessenger extends JavaPlugin implements Listener
                             Player sender = getServer().getPlayer(entry.getKey());
                             if(sender != null && receiver != null)
                             {
+                                if(essentials != null)
+                                {
+                                    User essReceiver = essentials.getUser(receiver);
+                                    User essSender = essentials.getUser(sender);
+                                    if(essSender.isMuted() || essReceiver.isIgnoredPlayer(essSender))
+                                    {
+                                        continue;
+                                    }
+                                }
+                                
                                 receiver.spigot().sendMessage(ChatMessageType.ACTION_BAR,
                                         new ComponentBuilder(
                                                 loadingPrefix[ellipsisFrame] +
@@ -119,11 +137,10 @@ public class AdvancedMessenger extends JavaPlugin implements Listener
                             Player receiver = getServer().getPlayer(entry.getValue().getTypingTarget());
                             if(receiver != null)
                             {
-                                receiver.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("").create());
-            
                                 PlayerMessengerData receiverData = messengerData.get(entry.getValue().getTypingTarget());
                                 if(receiverData.isDisplayingTypingNotification())
                                 {
+                                    receiver.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("").create());
                                     receiverData.setDisplayingTypingNotification(false);
                                     typingNotificationCount--;
                                 }
@@ -166,6 +183,12 @@ public class AdvancedMessenger extends JavaPlugin implements Listener
         PlayerMessengerData fromData = messengerData.get(from.getUniqueId());
         fromData.resetTypingTime();
     
+        if(essentials != null && essentials.getUser(from).isMuted())
+        {
+            from.sendMessage(ChatColor.RED + "You are currently muted!");
+            return;
+        }
+        
         Player toPlayer = null;
         if(to.isEmpty())
         {
@@ -190,6 +213,12 @@ public class AdvancedMessenger extends JavaPlugin implements Listener
         }
         else
         {
+            if(essentials != null && essentials.getUser(toPlayer).isIgnoredPlayer(essentials.getUser(from)))
+            {
+                from.sendMessage(ChatColor.RED + "You are currently ignored!");
+                return;
+            }
+            
             toPlayer.spigot().sendMessage(new ComponentBuilder()
                     .append(ChatColor.GOLD + "[" + from.getDisplayName() + ChatColor.GOLD  + " \u2192 You] ")
                     .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/r "))
