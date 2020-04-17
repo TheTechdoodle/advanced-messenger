@@ -6,9 +6,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -89,7 +87,8 @@ public class AdvancedMessenger extends JavaPlugin implements Listener
                     {
                         // Only show typing notifications if it's an already established chat
                         if(messengerData.containsKey(entry.getValue().getTypingTarget()) &&
-                                messengerData.get(entry.getValue().getTypingTarget()).getLastMessaged() == entry.getKey())
+                                messengerData.get(entry.getValue().getTypingTarget()).getLastMessaged() != null &&
+                                messengerData.get(entry.getValue().getTypingTarget()).getLastMessaged().equals(entry.getKey()))
                         {
                             Player receiver = getServer().getPlayer(entry.getValue().getTypingTarget());
                             Player sender = getServer().getPlayer(entry.getKey());
