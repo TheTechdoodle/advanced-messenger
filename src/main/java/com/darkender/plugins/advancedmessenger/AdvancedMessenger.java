@@ -131,6 +131,7 @@ public class AdvancedMessenger extends JavaPlugin implements Listener
                     }
                     else if(entry.getValue().wasTyping())
                     {
+                        // Remove typing notification if no longer typing
                         entry.getValue().setWasTyping(false);
     
                         if(messengerData.containsKey(entry.getValue().getTypingTarget()) &&
@@ -162,7 +163,7 @@ public class AdvancedMessenger extends JavaPlugin implements Listener
     }
     
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event)
+    private void onPlayerJoin(PlayerJoinEvent event)
     {
         if(messengerData.containsKey(event.getPlayer().getUniqueId()))
         {
@@ -175,7 +176,7 @@ public class AdvancedMessenger extends JavaPlugin implements Listener
     }
     
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event)
+    private void onPlayerQuit(PlayerQuitEvent event)
     {
         messengerData.get(event.getPlayer().getUniqueId()).quit();
     }
@@ -191,7 +192,7 @@ public class AdvancedMessenger extends JavaPlugin implements Listener
             return;
         }
         
-        Player toPlayer = null;
+        Player toPlayer;
         if(to.isEmpty())
         {
             if(fromData.getLastMessaged() != null)

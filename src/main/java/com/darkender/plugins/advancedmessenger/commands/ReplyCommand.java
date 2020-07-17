@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ReplyCommand implements CommandExecutor, TabCompleter
 {
-    private AdvancedMessenger advancedMessenger;
+    private final AdvancedMessenger advancedMessenger;
     
     public ReplyCommand(AdvancedMessenger advancedMessenger)
     {
@@ -42,6 +42,7 @@ public class ReplyCommand implements CommandExecutor, TabCompleter
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args)
     {
+        // Use tab complete for typing indicator
         if(args.length > 0 && sender instanceof Player)
         {
             StringBuilder message = new StringBuilder(args[0]);

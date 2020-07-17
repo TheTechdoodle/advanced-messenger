@@ -13,7 +13,7 @@ import java.util.List;
 
 public class MessageCommand implements CommandExecutor, TabCompleter
 {
-    private AdvancedMessenger advancedMessenger;
+    private final AdvancedMessenger advancedMessenger;
     
     public MessageCommand(AdvancedMessenger advancedMessenger)
     {
@@ -48,6 +48,7 @@ public class MessageCommand implements CommandExecutor, TabCompleter
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args)
     {
+        // Use message tab complete for typing indication
         if(args.length > 1 && sender instanceof Player)
         {
             StringBuilder message = new StringBuilder(args[1]);
@@ -59,6 +60,7 @@ public class MessageCommand implements CommandExecutor, TabCompleter
             advancedMessenger.typingMessage((Player) sender, args[0], message.toString());
             return new ArrayList<>();
         }
+        // Return null for a list of players
         return null;
     }
 }
